@@ -3,6 +3,7 @@ import path from "path";
 import routes from "../routes/index.routes";
 import morgan from "morgan";
 import socket from "socket.io";
+import { engine } from "express-handlebars";
 
 class Main {
   constructor() {
@@ -13,9 +14,20 @@ class Main {
     //Middlewares
     app.use(morgan("dev"));
     //config
+    app.set("views", path.join(__dirname, "../views"));
+    app.engine(
+      ".hbs",
+      engine({
+        defaultLayout: "main",
+        layoutsDir: path.join(app.get("views"), "layouts"),
+        partialsDir: path.join(app.get("views"), "partials"),
+        extname: ".hbs",
+      })
+    );
+    app.set("view engine", ".hbs");
     app.use(express.static(path.join(__dirname, "../public")));
-    console.log(path.join(__dirname, "../public"));
     //routes
+
     app.use(routes);
     //start
     app.set("port", process.env.PORT || 300);
